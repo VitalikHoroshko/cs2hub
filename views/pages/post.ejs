@@ -1,0 +1,77 @@
+<%- include('../partials/header') %>
+
+<main class="container">
+  <article class="post-layout">
+    <div class="post-main">
+      <div class="post-cover">
+        <img src="<%= post.image %>" alt="<%= post.title %>">
+      </div>
+
+      <div class="post-header">
+        <div class="post-meta">
+          <span class="tag"><%= post.category.toUpperCase() %></span>
+          <span class="post-date"><%= post.date %></span>
+        </div>
+
+        <h1><%= post.title %></h1>
+        <p class="post-excerpt"><%= post.excerpt %></p>
+      </div>
+
+      <div class="post-content">
+        <%- post.content %>
+      </div>
+
+      <% if (relatedPosts && relatedPosts.length > 0) { %>
+        <section class="related-section">
+          <div class="section-head">
+            <h2>Related Articles</h2>
+          </div>
+
+          <div class="related-grid">
+            <% relatedPosts.forEach(item => { %>
+              <article class="related-card">
+                <a href="/post/<%= item.slug %>" class="related-card-image">
+                  <img src="<%= item.image %>" alt="<%= item.title %>">
+                </a>
+
+                <div class="related-card-body">
+                  <span class="tag"><%= item.category.toUpperCase() %></span>
+                  <h3>
+                    <a href="/post/<%= item.slug %>"><%= item.title %></a>
+                  </h3>
+                  <p><%= item.excerpt %></p>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </section>
+      <% } %>
+    </div>
+
+    <aside class="post-sidebar">
+  <div class="sidebar-card">
+    <h3>More in <%= post.category %></h3>
+
+    <% if (relatedPosts && relatedPosts.length > 0) { %>
+      <div class="sidebar-posts">
+        <% relatedPosts.forEach(item => { %>
+          <a href="/post/<%= item.slug %>" class="sidebar-post">
+            <img src="<%= item.image %>" alt="<%= item.title %>">
+
+            <div class="sidebar-post-content">
+              <span class="sidebar-post-tag"><%= item.category.toUpperCase() %></span>
+              <strong><%= item.title %></strong>
+              <span class="sidebar-post-date"><%= item.date %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="sidebar-empty">No related posts yet.</p>
+    <% } %>
+  </div>
+</aside>
+  </article>
+</main>
+
+<%- include('../partials/footer') %>

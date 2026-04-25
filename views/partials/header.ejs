@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title><%= typeof title !== 'undefined' ? title : 'CS2HUB' %></title>
+  <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'CS2HUB - Best CS2 guides, pro settings, news, and top lists.' %>">
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <!-- LOGO -->
+      <a href="/" class="logo">
+        <img src="/images/logo.png" alt="CS2HUB logo" class="logo-image">
+      </a>
+
+      <!-- NAV -->
+      <nav class="main-nav">
+        <a href="/guides" class="<%= currentPath === '/guides' ? 'active' : '' %>">Guides</a>
+        <a href="/top-lists" class="<%= currentPath === '/top-lists' ? 'active' : '' %>">Top Lists</a>
+        <a href="/pro-settings" class="<%= currentPath === '/pro-settings' ? 'active' : '' %>">Pro Settings</a>
+        <a href="/news" class="<%= currentPath === '/news' ? 'active' : '' %>">News</a>
+        <a href="/gear" class="<%= currentPath === '/gear' ? 'active' : '' %>">Gear</a>
+
+        <% if (isAdmin) { %>
+          <a href="/admin" class="<%= currentPath === '/admin' ? 'active' : '' %>">Admin</a>
+        <% } %>
+      </nav>
+
+      <!-- SEARCH -->
+      <form action="/search" method="GET" class="search-form">
+        <button type="submit" class="search-icon-btn" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+          </svg>
+        </button>
+
+        <input
+          type="text"
+          name="q"
+          class="search-input"
+          placeholder="Search"
+          value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+        >
+      </form>
+
+    </div>
+  </header>

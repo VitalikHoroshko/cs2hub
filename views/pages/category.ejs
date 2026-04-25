@@ -1,0 +1,58 @@
+<%- include('../partials/header') %>
+
+<main class="container">
+  <section class="section category-page">
+    <div class="section-head">
+      <h1><%= title %></h1>
+    </div>
+
+    <% if (posts.length === 0) { %>
+      <p class="empty-text">No posts yet in this category.</p>
+    <% } else { %>
+      <div class="cards-grid">
+        <% posts.forEach(post => { %>
+          <article class="card">
+            <a href="/post/<%= post.slug %>">
+              <img src="<%= post.image %>" alt="<%= post.title %>">
+            </a>
+            <div class="card-body">
+              <span class="tag"><%= post.category.toUpperCase() %></span>
+              <h3>
+                <a href="/post/<%= post.slug %>"><%= post.title %></a>
+              </h3>
+              <p class="card-excerpt"><%= post.excerpt %></p>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+
+      <% if (totalPages > 1) { %>
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+            <a href="<%= baseUrl %>?page=<%= currentPage - 1 %>" class="pagination-btn">← Prev</a>
+          <% } else { %>
+            <span class="pagination-btn disabled">← Prev</span>
+          <% } %>
+
+          <div class="pagination-pages">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <% if (i === currentPage) { %>
+                <span class="pagination-number active"><%= i %></span>
+              <% } else { %>
+                <a href="<%= baseUrl %>?page=<%= i %>" class="pagination-number"><%= i %></a>
+              <% } %>
+            <% } %>
+          </div>
+
+          <% if (currentPage < totalPages) { %>
+            <a href="<%= baseUrl %>?page=<%= currentPage + 1 %>" class="pagination-btn">Next →</a>
+          <% } else { %>
+            <span class="pagination-btn disabled">Next →</span>
+          <% } %>
+        </div>
+      <% } %>
+    <% } %>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

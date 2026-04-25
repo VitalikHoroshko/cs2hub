@@ -1,0 +1,108 @@
+<%- include('../partials/header') %>
+
+<main class="container">
+  <section class="admin-page">
+    <div class="admin-page-top">
+      <div>
+        <p class="admin-kicker">Create</p>
+        <h1>New Post</h1>
+        <p class="admin-subtext">Add a new article to your site.</p>
+      </div>
+
+      <div class="admin-actions">
+        <a href="/admin" class="btn-secondary">Back</a>
+      </div>
+    </div>
+
+    <div class="admin-form-card">
+      <form method="POST" action="/admin/posts/new" class="admin-form" enctype="multipart/form-data">
+        <div class="form-grid">
+          <div class="form-field form-field-full">
+            <label>Title</label>
+            <input type="text" name="title" id="title" placeholder="Best CS2 Settings for Low-End PC" required>
+          </div>
+
+          <div class="form-field">
+            <label>Slug</label>
+            <input type="text" name="slug" id="slug" placeholder="best-cs2-settings-low-end-pc" required>
+          </div>
+
+          <div class="form-field">
+            <label>Category</label>
+            <select name="category" required>
+              <option value="">Select category</option>
+              <option value="guides">Guides</option>
+              <option value="top-lists">Top Lists</option>
+              <option value="pro-settings">Pro Settings</option>
+              <option value="news">News</option>
+              <option value="gear">Gear</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label>Image Path</label>
+            <input type="text" name="image" placeholder="/images/post1.jpg or leave empty">
+          </div>
+
+          <div class="form-field">
+            <label>Upload Image</label>
+            <input type="file" name="imageFile" accept="image/*">
+          </div>
+
+          <div class="form-field form-field-full">
+            <label>Excerpt</label>
+            <input type="text" name="excerpt" placeholder="Short description for cards and SEO." required>
+          </div>
+
+          <div class="form-field">
+            <label>Date</label>
+            <input type="date" name="date" required>
+          </div>
+
+          <div class="form-field checkbox-field">
+            <label class="checkbox-row">
+              <input type="checkbox" name="featured">
+              Featured post
+            </label>
+          </div>
+
+          <div class="form-field form-field-full">
+            <label>Content</label>
+            <textarea name="content" rows="14" placeholder="Post content (HTML supported)" required></textarea>
+          </div>
+        </div>
+
+        <div class="admin-actions">
+          <button type="submit" class="btn-primary">Save Post</button>
+          <a href="/admin" class="btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<script>
+  const titleInput = document.getElementById("title");
+  const slugInput = document.getElementById("slug");
+
+  function makeSlug(value) {
+    return value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\\s-]/g, "")
+      .replace(/\\s+/g, "-")
+      .replace(/-+/g, "-");
+  }
+
+  titleInput.addEventListener("input", () => {
+    if (!slugInput.dataset.edited) {
+      slugInput.value = makeSlug(titleInput.value);
+    }
+  });
+
+  slugInput.addEventListener("input", () => {
+    slugInput.dataset.edited = "true";
+  });
+</script>
+
+<%- include('../partials/footer') %>

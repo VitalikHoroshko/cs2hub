@@ -1,0 +1,72 @@
+<%- include('../partials/header') %>
+
+<main class="container">
+  <section class="admin-page">
+    <div class="admin-page-top">
+      <div>
+        <p class="admin-kicker">Dashboard</p>
+        <h1>Admin Panel</h1>
+        <p class="admin-subtext">Manage posts, update content, and publish faster.</p>
+      </div>
+
+      <div class="admin-actions">
+        <a href="/admin/posts/new" class="btn-primary">Add Post</a>
+        <a href="/admin/logout" class="btn-secondary">Logout</a>
+      </div>
+    </div>
+
+    <% if (!posts || posts.length === 0) { %>
+      <div class="admin-empty">
+        <h2>No posts yet</h2>
+        <p>Create your first post to start filling the site.</p>
+        <a href="/admin/posts/new" class="btn-primary">Create First Post</a>
+      </div>
+    <% } else { %>
+      <div class="admin-stats">
+        <div class="admin-stat-card">
+          <span>Total Posts</span>
+          <strong><%= posts.length %></strong>
+        </div>
+
+        <div class="admin-stat-card">
+          <span>Featured</span>
+          <strong><%= posts.filter(post => post.featured === 1 || post.featured === true).length %></strong>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <% posts.forEach(post => { %>
+          <div class="admin-card">
+            <div class="admin-card-image">
+              <img src="<%= post.image %>" alt="<%= post.title %>">
+            </div>
+
+            <div class="admin-card-body">
+              <div class="admin-card-meta">
+                <span class="tag"><%= post.category %></span>
+
+                <% if (post.featured === 1 || post.featured === true) { %>
+                  <span class="featured-badge">Featured</span>
+                <% } %>
+              </div>
+
+              <h3><%= post.title %></h3>
+              <p class="admin-card-slug"><%= post.slug %></p>
+
+              <div class="admin-card-actions">
+                <a href="/post/<%= post.slug %>" target="_blank" class="admin-link">Open</a>
+                <a href="/admin/posts/edit/<%= post.id %>" class="admin-link">Edit</a>
+
+                <form method="POST" action="/admin/posts/delete/<%= post.id %>" onsubmit="return confirm('Delete this post?')">
+                  <button type="submit" class="link-btn danger">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

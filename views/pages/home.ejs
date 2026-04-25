@@ -1,0 +1,85 @@
+<%- include('../partials/header') %>
+
+<main class="container">
+  <% if (featuredPost) { %>
+    <section class="hero">
+      <div class="hero-image">
+        <img src="<%= featuredPost.image %>" alt="<%= featuredPost.title %>">
+      </div>
+
+      <div class="hero-content">
+        <span class="badge">LATEST GUIDE</span>
+        <h1><%= featuredPost.title %></h1>
+        <p><%= featuredPost.excerpt %></p>
+        <a href="/post/<%= featuredPost.slug %>" class="btn-primary">Read Guide</a>
+      </div>
+    </section>
+  <% } else { %>
+    <section class="section">
+      <div class="section-head">
+        <h2>No posts yet</h2>
+      </div>
+
+      <% if (isAdmin) { %>
+        <p class="empty-text">Add your first post from the admin panel.</p>
+        <a href="/admin" class="btn-primary">Open Admin</a>
+      <% } else { %>
+        <p class="empty-text">Content is coming soon.</p>
+      <% } %>
+    </section>
+  <% } %>
+
+  <% if (latestPosts && latestPosts.length > 0) { %>
+    <section class="section">
+      <div class="section-head">
+        <h2>Latest Articles</h2>
+      </div>
+
+      <div class="cards-grid">
+        <% latestPosts.forEach(post => { %>
+          <article class="card">
+            <a href="/post/<%= post.slug %>">
+              <img src="<%= post.image %>" alt="<%= post.title %>">
+            </a>
+            <div class="card-body">
+              <span class="tag"><%= post.category.toUpperCase() %></span>
+              <h3>
+                <a href="/post/<%= post.slug %>"><%= post.title %></a>
+              </h3>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Browse by Category</h2>
+    </div>
+
+    <div class="category-grid">
+      <a href="/guides" class="category-card">
+        <h3>Guides</h3>
+        <p>Step-by-step tutorials</p>
+      </a>
+
+      <a href="/top-lists" class="category-card">
+        <h3>Top Lists</h3>
+        <p>Rankings and comparisons</p>
+      </a>
+
+      <a href="/pro-settings" class="category-card">
+        <h3>Pro Settings</h3>
+        <p>Configs and optimization</p>
+      </a>
+
+      <a href="/news" class="category-card">
+        <h3>News</h3>
+        <p>Latest updates</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

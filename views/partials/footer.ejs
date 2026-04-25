@@ -1,0 +1,127 @@
+<style>
+  .site-footer {
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 70px;
+    padding: 50px 0 35px;
+  }
+
+  .site-footer .footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    width: min(1320px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  .site-footer .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .site-footer .footer-brand {
+    max-width: 340px;
+  }
+
+  .site-footer .footer-logo-image {
+    width: 180px;
+    height: auto;
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .site-footer .footer-description {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #6b7280;
+  }
+
+  .site-footer .footer-col h4 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #111827;
+  }
+
+  .site-footer .footer-col a {
+    display: block;
+    font-size: 15px;
+    color: #4b5563;
+    text-decoration: none;
+    line-height: 1.6;
+  }
+
+  .site-footer .footer-col a:hover {
+    color: #2563eb;
+  }
+
+  .site-footer .footer-copy {
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  @media (max-width: 1000px) {
+    .site-footer .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-footer .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .site-footer {
+      padding: 40px 0 30px;
+    }
+  }
+</style>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+
+    <div class="footer-col footer-brand">
+      <img src="/images/logo.png" alt="CS2HUB logo" class="footer-logo-image">
+
+      <p class="footer-description">
+        CS2HUB is a website focused on CS2 guides, settings, tips, and useful content for players who want to improve.
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Categories</h4>
+      <a href="/guides">Guides</a>
+      <a href="/top-lists">Top Lists</a>
+      <a href="/pro-settings">Pro Settings</a>
+      <a href="/news">News</a>
+      <a href="/gear">Gear</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Popular Topics</h4>
+      <a href="/guides">FPS Boost</a>
+      <a href="/guides">Crosshair Settings</a>
+      <a href="/guides">NVIDIA Settings</a>
+      <a href="/pro-settings">Pro Player Configs</a>
+      <a href="/gear">Best Gaming Gear</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>CS2HUB</h4>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Privacy Policy</a>
+      <div class="footer-copy">© 2026 CS2HUB. All rights reserved.</div>
+    </div>
+
+  </div>
+</footer>
+
+</body>
+</html>
