@@ -4,4 +4,4 @@ Allow: /
 Disallow: /admin
 Disallow: /login
 
-Sitemap: https://cs2hub.com/sitemap.xml
+Sitemap: https://cs2hub-g0tg.onrender.com/sitemap.xml
