@@ -10,13 +10,12 @@ const db = require("./database/db");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static('public'));
+app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   session({
@@ -26,17 +25,13 @@ app.use(
   })
 );
 
-// ensure uploads folder exists
 const uploadsPath = path.join(__dirname, "public", "uploads");
 if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath, { recursive: true });
 }
 
-// multer
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsPath);
-  },
+  destination: (req, file, cb) => cb(null, uploadsPath),
   filename: (req, file, cb) => {
     const safeName = Date.now() + "-" + file.originalname.replace(/\s+/g, "-");
     cb(null, safeName);
@@ -60,41 +55,27 @@ function isAuth(req) {
   return req.session && req.session.isAdmin;
 }
 
-function dbAll(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
+async function dbAll(sql, params = []) {
+  const result = await db.query(sql, params);
+  return result.rows;
 }
 
-function dbGet(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
+async function dbGet(sql, params = []) {
+  const result = await db.query(sql, params);
+  return result.rows[0];
 }
 
-function dbRun(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function (err) {
-      if (err) reject(err);
-      else resolve(this);
-    });
-  });
+async function dbRun(sql, params = []) {
+  return await db.query(sql, params);
 }
 
 async function renderCategoryPage(req, res, options) {
   try {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const perPage = 6;
-    const offset = (page - 1) * perPage;
 
     const totalRow = await dbGet(
-      "SELECT COUNT(*) as count FROM posts WHERE category = ?",
+      "SELECT COUNT(*)::int as count FROM posts WHERE category = $1",
       [options.category]
     );
 
@@ -105,7 +86,7 @@ async function renderCategoryPage(req, res, options) {
     const safeOffset = (safePage - 1) * perPage;
 
     const rows = await dbAll(
-      "SELECT * FROM posts WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?",
+      "SELECT * FROM posts WHERE category = $1 ORDER BY id DESC LIMIT $2 OFFSET $3",
       [options.category, perPage, safeOffset]
     );
 
@@ -128,7 +109,7 @@ app.get("/", async (req, res) => {
   try {
     const rows = await dbAll("SELECT * FROM posts ORDER BY id DESC");
 
-    const featuredPost = rows.find((p) => p.featured === 1) || rows[0] || null;
+    const featuredPost = rows.find((p) => p.featured === true) || rows[0] || null;
     const latestPosts = featuredPost
       ? rows.filter((p) => p.id !== featuredPost.id).slice(0, 4)
       : [];
@@ -151,8 +132,7 @@ app.get("/guides", async (req, res) => {
   await renderCategoryPage(req, res, {
     category: "guides",
     title: "CS2 Guides - CS2HUB",
-    description:
-      "Read the best CS2 guides, tips, and tutorials to improve your gameplay.",
+    description: "Read the best CS2 guides, tips, and tutorials to improve your gameplay.",
     baseUrl: "/guides",
   });
 });
@@ -161,8 +141,7 @@ app.get("/top-lists", async (req, res) => {
   await renderCategoryPage(req, res, {
     category: "top-lists",
     title: "Top Lists - CS2HUB",
-    description:
-      "Discover the best CS2 settings, gear, rankings, and useful top lists.",
+    description: "Discover the best CS2 settings, gear, rankings, and useful top lists.",
     baseUrl: "/top-lists",
   });
 });
@@ -171,8 +150,7 @@ app.get("/pro-settings", async (req, res) => {
   await renderCategoryPage(req, res, {
     category: "pro-settings",
     title: "Pro Settings - CS2HUB",
-    description:
-      "Explore CS2 pro player settings, configs, crosshairs, resolutions, and gear.",
+    description: "Explore CS2 pro player settings, configs, crosshairs, resolutions, and gear.",
     baseUrl: "/pro-settings",
   });
 });
@@ -181,8 +159,7 @@ app.get("/news", async (req, res) => {
   await renderCategoryPage(req, res, {
     category: "news",
     title: "CS2 News - CS2HUB",
-    description:
-      "Stay updated with the latest CS2 news, updates, esports stories, and patch changes.",
+    description: "Stay updated with the latest CS2 news, updates, esports stories, and patch changes.",
     baseUrl: "/news",
   });
 });
@@ -191,8 +168,7 @@ app.get("/gear", async (req, res) => {
   await renderCategoryPage(req, res, {
     category: "gear",
     title: "CS2 Gear - CS2HUB",
-    description:
-      "Find the best CS2 gaming gear, mice, keyboards, monitors, headsets, and setups.",
+    description: "Find the best CS2 gaming gear, mice, keyboards, monitors, headsets, and setups.",
     baseUrl: "/gear",
   });
 });
@@ -227,8 +203,7 @@ app.get("/search", async (req, res) => {
     if (!q) {
       return renderPage(res, "pages/category", {
         title: "Search - CS2HUB",
-        description:
-          "Search CS2HUB posts, guides, settings, news, and gear articles.",
+        description: "Search CS2HUB posts, guides, settings, news, and gear articles.",
         heading: "Search Results",
         posts: [],
         searchQuery: "",
@@ -243,13 +218,13 @@ app.get("/search", async (req, res) => {
     const rows = await dbAll(
       `
       SELECT * FROM posts
-      WHERE title LIKE ?
-         OR excerpt LIKE ?
-         OR content LIKE ?
-         OR category LIKE ?
+      WHERE title ILIKE $1
+         OR excerpt ILIKE $1
+         OR content ILIKE $1
+         OR category ILIKE $1
       ORDER BY id DESC
       `,
-      [likeQuery, likeQuery, likeQuery, likeQuery]
+      [likeQuery]
     );
 
     renderPage(res, "pages/category", {
@@ -271,7 +246,7 @@ app.get("/search", async (req, res) => {
 // SINGLE POST
 app.get("/post/:slug", async (req, res) => {
   try {
-    const post = await dbGet("SELECT * FROM posts WHERE slug = ?", [
+    const post = await dbGet("SELECT * FROM posts WHERE slug = $1", [
       req.params.slug,
     ]);
 
@@ -285,7 +260,7 @@ app.get("/post/:slug", async (req, res) => {
     }
 
     const relatedPosts = await dbAll(
-      "SELECT * FROM posts WHERE category = ? AND slug != ? ORDER BY id DESC LIMIT 3",
+      "SELECT * FROM posts WHERE category = $1 AND slug != $2 ORDER BY id DESC LIMIT 3",
       [post.category, post.slug]
     );
 
@@ -315,10 +290,7 @@ app.get("/admin/login", (req, res) => {
 app.post("/admin/login", (req, res) => {
   const { login, password } = req.body;
 
-  if (
-    login === process.env.ADMIN_LOGIN &&
-    password === process.env.ADMIN_PASSWORD
-  ) {
+  if (login === process.env.ADMIN_LOGIN && password === process.env.ADMIN_PASSWORD) {
     req.session.isAdmin = true;
     return res.redirect("/admin");
   }
@@ -338,9 +310,7 @@ app.get("/admin/logout", (req, res) => {
 
 // ADMIN DASHBOARD
 app.get("/admin", async (req, res) => {
-  if (!isAuth(req)) {
-    return res.redirect("/admin/login");
-  }
+  if (!isAuth(req)) return res.redirect("/admin/login");
 
   try {
     const posts = await dbAll("SELECT * FROM posts ORDER BY id DESC");
@@ -357,9 +327,7 @@ app.get("/admin", async (req, res) => {
 
 // NEW POST
 app.get("/admin/posts/new", (req, res) => {
-  if (!isAuth(req)) {
-    return res.redirect("/admin/login");
-  }
+  if (!isAuth(req)) return res.redirect("/admin/login");
 
   renderPage(res, "pages/admin-new-post", {
     title: "New Post - CS2HUB Admin",
@@ -368,35 +336,23 @@ app.get("/admin/posts/new", (req, res) => {
 });
 
 app.post("/admin/posts/new", upload.single("imageFile"), async (req, res) => {
-  if (!isAuth(req)) {
-    return res.redirect("/admin/login");
-  }
+  if (!isAuth(req)) return res.redirect("/admin/login");
 
   try {
-    const { title, slug, category, image, excerpt, content, date, featured } =
-      req.body;
-
+    const { title, slug, category, image, excerpt, content, date, featured } = req.body;
     const finalImage = req.file ? `/uploads/${req.file.filename}` : image;
+    const isFeatured = featured === "on";
 
-    if (featured === "on") {
-      await dbRun("UPDATE posts SET featured = 0");
+    if (isFeatured) {
+      await dbRun("UPDATE posts SET featured = false");
     }
 
     await dbRun(
       `
       INSERT INTO posts (title, slug, category, image, excerpt, content, date, featured)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `,
-      [
-        title,
-        slug,
-        category,
-        finalImage,
-        excerpt,
-        content,
-        date,
-        featured === "on" ? 1 : 0,
-      ]
+      [title, slug, category, finalImage, excerpt, content, date, isFeatured]
     );
 
     res.redirect("/admin");
@@ -408,14 +364,10 @@ app.post("/admin/posts/new", upload.single("imageFile"), async (req, res) => {
 
 // EDIT POST
 app.get("/admin/posts/edit/:id", async (req, res) => {
-  if (!isAuth(req)) {
-    return res.redirect("/admin/login");
-  }
+  if (!isAuth(req)) return res.redirect("/admin/login");
 
   try {
-    const post = await dbGet("SELECT * FROM posts WHERE id = ?", [
-      req.params.id,
-    ]);
+    const post = await dbGet("SELECT * FROM posts WHERE id = $1", [req.params.id]);
 
     if (!post) {
       return res.status(404).render("pages/404", {
@@ -437,74 +389,68 @@ app.get("/admin/posts/edit/:id", async (req, res) => {
   }
 });
 
-app.post(
-  "/admin/posts/edit/:id",
-  upload.single("imageFile"),
-  async (req, res) => {
-    if (!isAuth(req)) {
-      return res.redirect("/admin/login");
+app.post("/admin/posts/edit/:id", upload.single("imageFile"), async (req, res) => {
+  if (!isAuth(req)) return res.redirect("/admin/login");
+
+  try {
+    const oldPost = await dbGet("SELECT * FROM posts WHERE id = $1", [req.params.id]);
+
+    if (!oldPost) {
+      return res.status(404).render("pages/404", {
+        currentPath: req.path,
+        isAdmin: req.session && req.session.isAdmin,
+        title: "404 - CS2HUB",
+        description: "Page not found.",
+      });
     }
 
-    try {
-      const oldPost = await dbGet("SELECT * FROM posts WHERE id = ?", [
-        req.params.id,
-      ]);
+    const { title, slug, category, image, excerpt, content, date, featured } = req.body;
+    const finalImage = req.file ? `/uploads/${req.file.filename}` : image || oldPost.image;
+    const isFeatured = featured === "on";
 
-      if (!oldPost) {
-        return res.status(404).render("pages/404", {
-          currentPath: req.path,
-          isAdmin: req.session && req.session.isAdmin,
-          title: "404 - CS2HUB",
-          description: "Page not found.",
-        });
-      }
+    if (isFeatured) {
+      await dbRun("UPDATE posts SET featured = false");
+    }
 
-      const { title, slug, category, image, excerpt, content, date, featured } =
-        req.body;
-
-      const finalImage = req.file
-        ? `/uploads/${req.file.filename}`
-        : image || oldPost.image;
-
-      if (featured === "on") {
-        await dbRun("UPDATE posts SET featured = 0");
-      }
-
-      await dbRun(
-        `
+    await dbRun(
+      `
       UPDATE posts
-      SET title = ?, slug = ?, category = ?, image = ?, excerpt = ?, content = ?, date = ?, featured = ?
-      WHERE id = ?
+      SET title = $1,
+          slug = $2,
+          category = $3,
+          image = $4,
+          excerpt = $5,
+          content = $6,
+          date = $7,
+          featured = $8
+      WHERE id = $9
       `,
-        [
-          title,
-          slug,
-          category,
-          finalImage,
-          excerpt,
-          content,
-          date,
-          featured === "on" ? 1 : 0,
-          req.params.id,
-        ]
-      );
+      [
+        title,
+        slug,
+        category,
+        finalImage,
+        excerpt,
+        content,
+        date,
+        isFeatured,
+        req.params.id,
+      ]
+    );
 
-      res.redirect("/admin");
-    } catch (err) {
-      console.error(err);
-      res.send("DB update error");
-    }
+    res.redirect("/admin");
+  } catch (err) {
+    console.error(err);
+    res.send("DB update error");
   }
-);
+});
 
 // DELETE POST
 app.post("/admin/posts/delete/:id", async (req, res) => {
-  if (!isAuth(req)) {
-    return res.redirect("/admin/login");
-  }
+  if (!isAuth(req)) return res.redirect("/admin/login");
 
   try {
-    await dbRun("DELETE FROM posts WHERE id = ?", [req.params.id]);
+    await dbRun("DELETE FROM posts WHERE id = $1", [req.params.id]);
     res.redirect("/admin");
   } catch (err) {
     console.error(err);
@@ -523,5 +469,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`CS2HUB running on http://localhost:${PORT}`);
+  console.log(`CS2HUB running on port ${PORT}`);
 });
