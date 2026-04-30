@@ -1265,4 +1265,21 @@ main {
   font-size: 12px;
   color: #6b7280;
 }
+.product-img-box {
+  width: 220px;
+  height: 160px; /* ФІКСУЄМО ВИСОТУ */
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-img-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
 }
