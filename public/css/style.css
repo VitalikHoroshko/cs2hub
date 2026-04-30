@@ -1195,7 +1195,7 @@ main {
   width: 280px !important;
   height: 180px !important;
   object-fit: contain !important;
-  display: block;
-  margin: 20px auto;
+  display: block !important;
+  margin: 20px auto !important;
 }
 }
