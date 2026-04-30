@@ -1191,4 +1191,11 @@ main {
   transform: translateY(-2px);
   opacity: 0.9;
 }
+.post-product-img {
+  width: 280px !important;
+  height: 180px !important;
+  object-fit: contain !important;
+  display: block;
+  margin: 20px auto;
+}
 }
