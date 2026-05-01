@@ -458,20 +458,6 @@ app.post("/admin/posts/delete/:id", async (req, res) => {
   }
 });
 
-// 404
-app.use((req, res) => {
-  res.status(404).render("pages/404", {
-    currentPath: req.path,
-    isAdmin: req.session && req.session.isAdmin,
-    title: "404 - CS2HUB",
-    description: "Page not found.",
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`CS2HUB running on port ${PORT}`);
-});
-
 // SITEMAP
 app.get("/sitemap.xml", async (req, res) => {
   try {
@@ -513,4 +499,18 @@ ${urls
     console.error(err);
     res.status(500).send("Sitemap error");
   }
+});
+
+// 404
+app.use((req, res) => {
+  res.status(404).render("pages/404", {
+    currentPath: req.path,
+    isAdmin: req.session && req.session.isAdmin,
+    title: "404 - CS2HUB",
+    description: "Page not found.",
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`CS2HUB running on port ${PORT}`);
 });
