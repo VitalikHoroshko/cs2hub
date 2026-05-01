@@ -1266,20 +1266,21 @@ main {
   color: #6b7280;
 }
 .product-img-box {
-  width: 220px;
-  height: 160px; /* ФІКСУЄМО ВИСОТУ */
-  background: #f9fafb;
-  border-radius: 12px;
-  padding: 15px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 220px !important;
+  height: 160px !important;
+  background: #f9fafb !important;
+  border-radius: 12px !important;
+  padding: 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .product-img-box img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
 }
 }
