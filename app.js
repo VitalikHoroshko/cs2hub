@@ -471,3 +471,46 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`CS2HUB running on port ${PORT}`);
 });
+
+// SITEMAP
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const posts = await dbAll("SELECT slug FROM posts ORDER BY id DESC");
+
+    const baseUrl = "https://cs2hub-g0tg.onrender.com";
+
+    const staticPages = [
+      "",
+      "/guides",
+      "/top-lists",
+      "/pro-settings",
+      "/news",
+      "/gear",
+      "/about",
+      "/contact",
+      "/privacy",
+    ];
+
+    const urls = [
+      ...staticPages.map((page) => `${baseUrl}${page}`),
+      ...posts.map((post) => `${baseUrl}/post/${post.slug}`),
+    ];
+
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls
+  .map(
+    (url) => `  <url>
+    <loc>${url}</loc>
+  </url>`
+  )
+  .join("\n")}
+</urlset>`;
+
+    res.header("Content-Type", "application/xml");
+    res.send(sitemap);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Sitemap error");
+  }
+});
