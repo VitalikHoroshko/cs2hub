@@ -5,6 +5,15 @@ const multer = require("multer");
 const fs = require("fs");
 require("dotenv").config();
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 const db = require("./database/db");
 
 const app = express();
@@ -340,6 +349,8 @@ app.post("/admin/posts/new", upload.single("imageFile"), async (req, res) => {
 
   try {
     const { title, slug, category, image, excerpt, content, date, featured } = req.body;
+
+    const finalSlug = slug ? slugify(slug) : slugify(title);
     const finalImage = req.file ? `/uploads/${req.file.filename}` : image;
     const isFeatured = featured === "on";
 
@@ -352,7 +363,7 @@ app.post("/admin/posts/new", upload.single("imageFile"), async (req, res) => {
       INSERT INTO posts (title, slug, category, image, excerpt, content, date, featured)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `,
-      [title, slug, category, finalImage, excerpt, content, date, isFeatured]
+      [title, finalSlug, category, finalImage, excerpt, content, date, isFeatured]
     );
 
     res.redirect("/admin");
@@ -405,6 +416,8 @@ app.post("/admin/posts/edit/:id", upload.single("imageFile"), async (req, res) =
     }
 
     const { title, slug, category, image, excerpt, content, date, featured } = req.body;
+
+    const finalSlug = slug ? slugify(slug) : slugify(title);
     const finalImage = req.file ? `/uploads/${req.file.filename}` : image || oldPost.image;
     const isFeatured = featured === "on";
 
@@ -427,7 +440,7 @@ app.post("/admin/posts/edit/:id", upload.single("imageFile"), async (req, res) =
       `,
       [
         title,
-        slug,
+        finalSlug,
         category,
         finalImage,
         excerpt,
