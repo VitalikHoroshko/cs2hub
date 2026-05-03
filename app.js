@@ -417,7 +417,11 @@ app.post("/admin/posts/edit/:id", upload.single("imageFile"), async (req, res) =
 
     const { title, slug, category, image, excerpt, content, date, featured } = req.body;
 
-    const finalSlug = slug ? slugify(slug) : slugify(title);
+    const finalSlug =
+      slug && slug.trim() !== oldPost.slug
+        ? slugify(slug)
+        : slugify(title);
+
     const finalImage = req.file ? `/uploads/${req.file.filename}` : image || oldPost.image;
     const isFeatured = featured === "on";
 
